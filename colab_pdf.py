@@ -1,4 +1,4 @@
-def colab_pdf(file_name, notebookpath="/content/drive/MyDrive/Colab Notebooks/"):
+def colab_pdf(file_name, notebookpath="drive/MyDrive/Colab Notebooks"):
     import os
 
     # Checking if file_name passed is a string.
@@ -8,8 +8,8 @@ def colab_pdf(file_name, notebookpath="/content/drive/MyDrive/Colab Notebooks/")
         )
 
     # Using the defaults used by google.colab
-    drive_mount_point = "/content/drive/"
-    gdrive_home = os.path.join(drive_mount_point, "My Drive/")
+    drive_mount_point = "/content/drive"
+    gdrive_home = os.path.join(drive_mount_point, "MyDrive/")
 
     # If the drive is not already mounted, attempt to mount it.
     if not os.path.isdir(gdrive_home):
@@ -18,12 +18,12 @@ def colab_pdf(file_name, notebookpath="/content/drive/MyDrive/Colab Notebooks/")
         drive.mount(drive_mount_point)
 
     # Check if the notebook exists in the Drive.
-    if not os.path.isfile(os.path.join(notebookpath, file_name)):
-        raise ValueError(f"file '{file_name}' not found in path '{notebookpath}'.")
+    # if not os.path.isfile(os.path.join(notebookpath, file_name)):
+    #     raise ValueError(f"file '{file_name}' not found in path '{notebookpath}'.")
 
     # Installing all the recommended packages.
     get_ipython().system(
-        "apt update >> /dev/null && apt install texlive-xetex texlive-fonts-recommended texlive-generic-recommended >> /dev/null"
+        "apt update >> /dev/null && apt install texlive-xetex texlive-fonts-recommended texlive-xetex >> /dev/null"
     )
 
     # If pdf with the same name exists, remove it.
@@ -34,9 +34,11 @@ def colab_pdf(file_name, notebookpath="/content/drive/MyDrive/Colab Notebooks/")
 
     # Attempt to convert to pdf and save it in Gdrive home dir using jupyter nbconvert command.
     try:
-        get_ipython().system(
-            "jupyter nbconvert --output-dir='$gdrive_home' '$notebookpath''$file_name' --to pdf"
-        )
+        fullnotebookpath = os.path.join(notebookpath,file_name)
+        !jupyter nbconvert --output-dir="$gdrive_home" "$fullnotebookpath" --to pdf
+        # get_ipython().system(
+        #     """jupyter nbconvert --output-dir='$gdrive_home' '$notebookpath''$file_name' --to pdf"
+        # )
     except:
         return "nbconvert error"
 
